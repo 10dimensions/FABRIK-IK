@@ -29,4 +29,21 @@ public class Joints : MonoBehaviour
             }
         }
     }
+
+    private void UpdateList()
+    {
+        for(int i=0; i<ArmJoints.Length; i++)
+        {
+            if(i==ArmJoints.Length -1)
+            {
+                jointsData[i]=(new JointsData( ArmJoints[i].position, new Vector3(0,0,0)));
+            }
+            else
+            {
+                jointsData[i]=(new JointsData( ArmJoints[i].position, 
+                                            ArmJoints[i+1].position - ArmJoints[i].position
+                                        ));
+            }
+        }
+    }
 }

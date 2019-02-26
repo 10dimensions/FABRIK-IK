@@ -10,11 +10,14 @@ public class FABRIK : MonoBehaviour
     private Vector3 TargetRootDist;
 
     [SerializeField] private Joints JointsRef;
+    private int JointsCount;
 
     void Start()
     {
         EndEffector = GameObject.FindWithTag("end_effector").transform;
         GoalObject = GameObject.FindWithTag("goal").transform;
+
+        JointsCount = JointsRef.jointsData.Count;
 
     }
 
@@ -34,26 +37,10 @@ public class FABRIK : MonoBehaviour
         }
         else
         {
-
+            TargetWithinReach();
         }
 
-
-        while( TargetRootDist.magnitude > 0.1 ) 
-        {
-            FinalToRoot(); // PartOne
-            RootToFinal(); // PartTwo
-        }
     
-    }
-
-    private void FinalToRoot()
-    {
-
-    }
-
-    private void RootToFinal()
-    {
-
     }
 
     private bool CheckForReach(Vector3 _targetroot)
@@ -86,4 +73,30 @@ public class FABRIK : MonoBehaviour
             JointsRef.jointsData[j+1].NewJointsPos = _npos;
         }
     }
+
+    private void TargetWithinReach()
+    {
+        Vector3 _b = JointsRef.jointsData[0].JointsPos;
+
+        float _diff_a = (JointsRef.jointsData[JointsCount-1].JointsPos - GoalObject.position).magnitude;
+
+        while( _diff_a > 0.1 ) 
+        {
+            FinalToRoot(); // PartOne
+            RootToFinal(); // PartTwo
+        }
+
+    }
+
+
+    private void FinalToRoot()
+    {
+
+    }
+
+    private void RootToFinal()
+    {
+
+    }
+
 }

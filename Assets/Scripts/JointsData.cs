@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JointsData : MonoBehaviour
+[System.Serializable]
+public class JointsData
 {
    public Vector3 JointsPos;
    public Vector3 DeltaJointPos;
 
-   public Vector3 NewJointsPos;
-
     public JointsData(Vector3 _jointsPos, Vector3 _deltaJointPos)
     {
-        this.JointsPos = _jointsPos;
-        this.DeltaJointPos = _deltaJointPos;
+        JointsPos = _jointsPos;
+        DeltaJointPos = _deltaJointPos;
     }
 
-    public JointsData(Vector3 _newjointsPos)
-    {
-        this.NewJointsPos = _newjointsPos;
-    }
+    // public JointsData(Vector3 _newjointsPos)
+    // {
+    //     this.NewJointsPos = _newjointsPos;
+    // }
 
 }

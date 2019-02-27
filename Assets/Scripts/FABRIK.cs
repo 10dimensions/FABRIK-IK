@@ -9,25 +9,29 @@ public class FABRIK : MonoBehaviour
     [SerializeField] private Transform BaseRotor;
     private Vector3 TargetRootDist;
 
-    [SerializeField] private Joints JointsRef;
-    private int JointsCount;
+    [SerializeField] private GameObject JointsObjRef;
+    private Joints JointsRef;
+    public int JointsCount;
+
+    private Vector3 _b;
+    private float _diff_a;
+
 
     void Start()
     {
         EndEffector = GameObject.FindWithTag("end_effector").transform;
         GoalObject = GameObject.FindWithTag("goal").transform;
+        JointsRef = JointsObjRef.GetComponent<Joints>();
 
+        //JointsRef.PopulateList();
+        //Fabrik();
+
+    }
+
+    public void Fabrik() 
+    {   
         JointsCount = JointsRef.jointsData.Count;
 
-    }
-
-    private void Update()
-    {
-
-    }
-
-    private void Fabrik() 
-    {
         TargetRootDist = JointsRef.jointsData[0].JointsPos - GoalObject.position;
 
         bool _checkReach = CheckForReach(TargetRootDist);
@@ -65,25 +69,35 @@ public class FABRIK : MonoBehaviour
     {
         for(int j=0; j<JointsRef.jointsData.Count-1; j++)
         {
-            float r_i = (GoalObject.position).magnitude - JointsRef.jointsData[j].JointsPos.magnitude;
+            float r_i = (GoalObject.position - JointsRef.jointsData[j].JointsPos).magnitude;
             float lamd_i = JointsRef.jointsData[j].DeltaJointPos.magnitude  /  r_i;
 
             Vector3 _npos = (1-lamd_i)*JointsRef.jointsData[j].JointsPos + lamd_i*GoalObject.position;
 
-            JointsRef.jointsData[j+1].NewJointsPos = _npos;
+            //JointsRef.jointsData[j+1].NewJointsPos = _npos;
+            JointsRef.jointsData[j+1].JointsPos = _npos;
+
+            print(JointsRef.jointsData[j+1].JointsPos);
+            
         }
+        print("target out of reach");
     }
 
     private void TargetWithinReach()
-    {
-        Vector3 _b = JointsRef.jointsData[0].JointsPos;
+    {   
+        print("target within reach");
 
-        float _diff_a = (JointsRef.jointsData[JointsCount-1].JointsPos - GoalObject.position).magnitude;
+        _b = JointsRef.jointsData[0].JointsPos;
+
+         print(JointsRef.jointsData[JointsCount-1].JointsPos);
+        _diff_a = (JointsRef.jointsData[JointsCount-1].JointsPos - GoalObject.position).magnitude;
 
         while( _diff_a > 0.1 ) 
         {
             FinalToRoot(); // PartOne
             RootToFinal(); // PartTwo
+
+            _diff_a = (JointsRef.jointsData[JointsCount-1].JointsPos - GoalObject.position).magnitude;
         }
 
     }
@@ -91,12 +105,35 @@ public class FABRIK : MonoBehaviour
 
     private void FinalToRoot()
     {
+        JointsRef.jointsData[JointsCount-1].JointsPos = GoalObject.position;
 
+        for(int k=JointsCount-2; k>=0; k--)
+        {
+            float r_if = (JointsRef.jointsData[k+1].JointsPos - JointsRef.jointsData[k].JointsPos).magnitude;
+            float lamd_if = JointsRef.jointsData[k].DeltaJointPos.magnitude  /  r_if;
+
+            JointsRef.jointsData[k].JointsPos = (1-lamd_if) * JointsRef.jointsData[k].JointsPos + 
+                                                                lamd_if * JointsRef.jointsData[k].JointsPos;
+            
+            print(JointsRef.jointsData[k].JointsPos);
+
+        } 
     }
 
     private void RootToFinal()
     {
+        JointsRef.jointsData[0].JointsPos = _b;
 
+        for(int m=0; m<=JointsCount-2; m++)
+        {
+            float r_ir = (JointsRef.jointsData[m+1].JointsPos - JointsRef.jointsData[m].JointsPos).magnitude;
+            float lamd_ir = JointsRef.jointsData[m].DeltaJointPos.magnitude  /  r_ir;
+
+            JointsRef.jointsData[m+1].JointsPos = (1-lamd_ir) * JointsRef.jointsData[m].JointsPos + 
+                                                                lamd_ir * JointsRef.jointsData[m+1].JointsPos;
+        
+            print(JointsRef.jointsData[m+1].JointsPos);
+        }
     }
 
 }

@@ -18,7 +18,8 @@ public class FABRIK : MonoBehaviour
 
 
     void Start()
-    {
+    {   
+        
         EndEffector = GameObject.FindWithTag("end_effector").transform;
         GoalObject = GameObject.FindWithTag("goal").transform;
         JointsRef = JointsObjRef.GetComponent<Joints>();
@@ -89,15 +90,17 @@ public class FABRIK : MonoBehaviour
 
         _b = JointsRef.jointsData[0].JointsPos;
 
-         print(JointsRef.jointsData[JointsCount-1].JointsPos);
         _diff_a = (JointsRef.jointsData[JointsCount-1].JointsPos - GoalObject.position).magnitude;
+        print(_diff_a);
 
+        /* */
         while( _diff_a > 0.1 ) 
         {
             FinalToRoot(); // PartOne
             RootToFinal(); // PartTwo
 
             _diff_a = (JointsRef.jointsData[JointsCount-1].JointsPos - GoalObject.position).magnitude;
+            print(_diff_a.ToString("F4"));
         }
 
     }
@@ -112,10 +115,13 @@ public class FABRIK : MonoBehaviour
             float r_if = (JointsRef.jointsData[k+1].JointsPos - JointsRef.jointsData[k].JointsPos).magnitude;
             float lamd_if = JointsRef.jointsData[k].DeltaJointPos.magnitude  /  r_if;
 
-            JointsRef.jointsData[k].JointsPos = (1-lamd_if) * JointsRef.jointsData[k].JointsPos + 
+            //print("r : " + r_if + "lambda :" + lamd_if);
+            //print("before: " + JointsRef.jointsData[k].JointsPos.ToString("F4"));
+
+            JointsRef.jointsData[k].JointsPos = (1-lamd_if) * JointsRef.jointsData[k+1].JointsPos + 
                                                                 lamd_if * JointsRef.jointsData[k].JointsPos;
             
-            print(JointsRef.jointsData[k].JointsPos);
+            //print("after: " + JointsRef.jointsData[k].JointsPos.ToString("F4"));
 
         } 
     }
@@ -123,7 +129,9 @@ public class FABRIK : MonoBehaviour
     private void RootToFinal()
     {
         JointsRef.jointsData[0].JointsPos = _b;
+        print("root_final" + JointsRef.jointsData[0].JointsPos);
 
+        /* */
         for(int m=0; m<=JointsCount-2; m++)
         {
             float r_ir = (JointsRef.jointsData[m+1].JointsPos - JointsRef.jointsData[m].JointsPos).magnitude;
@@ -132,7 +140,7 @@ public class FABRIK : MonoBehaviour
             JointsRef.jointsData[m+1].JointsPos = (1-lamd_ir) * JointsRef.jointsData[m].JointsPos + 
                                                                 lamd_ir * JointsRef.jointsData[m+1].JointsPos;
         
-            print(JointsRef.jointsData[m+1].JointsPos);
+           // print(JointsRef.jointsData[m+1].JointsPos);
         }
     }
 

@@ -78,7 +78,7 @@ public class FABRIK : MonoBehaviour
             //JointsRef.jointsData[j+1].NewJointsPos = _npos;
             JointsRef.jointsData[j+1].JointsPos = _npos;
 
-            print(JointsRef.jointsData[j+1].JointsPos);
+            //print(JointsRef.jointsData[j+1].JointsPos);
             
         }
         print("target out of reach");
@@ -94,7 +94,7 @@ public class FABRIK : MonoBehaviour
         print(_diff_a);
 
         /* */
-        while( _diff_a > 0.1 ) 
+        while( _diff_a > 0.05 ) 
         {
             FinalToRoot(); // PartOne
             RootToFinal(); // PartTwo
